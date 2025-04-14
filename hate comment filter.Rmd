@@ -1,0 +1,145 @@
+---
+title: "hate speech detection"
+author: "yassmine yazidi"
+date: "2025-04-14"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load Packages
+
+```{r}
+install.packages("quanteda")
+install.packages("tm")
+install.packages("SnowballC")
+install.packages("wordcloud")
+install.packages("e1071")
+install.packages("gmodels")
+install.packages("caret")
+```
+
+# Load and Explore Dataset
+
+```{r}
+comments_raw <- read.csv("HateSpeechDataset_4000.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+comments_raw$Label <- factor(comments_raw$Label)
+str(comments_raw)
+table(comments_raw$Label)
+```
+
+# Preprocess Text Data
+
+```{r}
+library(tm)
+comment_corpus <- VCorpus(VectorSource(comments_raw$Content))
+comments_corpus_cleaned <- tm_map(comment_corpus, content_transformer(tolower))
+comments_corpus_cleaned <- tm_map(comments_corpus_cleaned, removeNumbers)
+comments_corpus_cleaned <- tm_map(comments_corpus_cleaned, removeWords, stopwords())
+comments_corpus_cleaned <- tm_map(comments_corpus_cleaned, removePunctuation)
+library(SnowballC)
+comments_corpus_cleaned <- tm_map(comments_corpus_cleaned, stemDocument)
+comments_corpus_cleaned <- tm_map(comments_corpus_cleaned, stripWhitespace)
+```
+
+# Create Document-Term Matrix
+
+```{r}
+comment_dtm <- DocumentTermMatrix(comments_corpus_cleaned)
+comment_dtm_train <- comment_dtm[1:2800, ]
+comment_dtm_test <- comment_dtm[2801:4000, ]
+comment_train_labels <- comments_raw[1:2800, ]$Label
+comment_test_labels <- comments_raw[2801:4000, ]$Label
+```
+
+# Label Distribution in Train/Test Sets
+
+```{r}
+prop.table(table(comment_train_labels))
+prop.table(table(comment_test_labels))
+```
+
+# Word Cloud: All Comments
+
+```{r}
+library(wordcloud)
+wordcloud(comments_raw$Content, max.words = 50, random.order = FALSE)
+```
+
+# Word Cloud: Hate Comments
+
+```{r}
+hate_comments <- comments_raw$Content[comments_raw$Label == 1]
+Hcorpus <- Corpus(VectorSource(hate_comments))
+Hcorpus <- tm_map(Hcorpus, content_transformer(tolower))
+Hcorpus <- tm_map(Hcorpus, removePunctuation)
+Hcorpus <- tm_map(Hcorpus, removeWords, stopwords())
+Hcorpus <- tm_map(Hcorpus, stripWhitespace)
+wordcloud(Hcorpus, max.words = 30, colors = brewer.pal(8, "Reds"))
+```
+
+# Word Cloud: Not Hate Comments
+
+```{r}
+nhate_comments <- comments_raw$Content[comments_raw$Label == 0]
+nHcorpus <- Corpus(VectorSource(nhate_comments))
+nHcorpus <- tm_map(nHcorpus, content_transformer(tolower))
+nHcorpus <- tm_map(nHcorpus, removePunctuation)
+nHcorpus <- tm_map(nHcorpus, removeWords, stopwords())
+nHcorpus <- tm_map(nHcorpus, stripWhitespace)
+wordcloud(nHcorpus, max.words = 30, colors = brewer.pal(8, "Blues"))
+```
+
+# Prepare for Naive Bayes
+
+```{r}
+library(quanteda)
+comment_freq_words <- findFreqTerms(comment_dtm_train, 5)
+comments_dtm_freq_train <- comment_dtm_train[, comment_freq_words]
+comments_dtm_freq_test <- comment_dtm_test[, comment_freq_words]
+convert_counts <- function(x) {
+  x <- ifelse(x > 0, "Yes", "No")
+}
+comments_train <- apply(comments_dtm_freq_train, MARGIN = 2, convert_counts)
+comments_test <- apply(comments_dtm_freq_test, MARGIN = 2, convert_counts)
+```
+
+# Train the Naive Bayes Model
+
+```{r}
+library(e1071)
+comments_classifer <- naiveBayes(comments_train, comment_train_labels)
+```
+
+# Evaluate Model
+
+```{r}
+library(gmodels)
+comments_test_pred <- predict(comments_classifer, comments_test, laplace = TRUE)
+CrossTable(comments_test_pred, comment_test_labels, prop.chisq = FALSE, prop.t = FALSE, dnn = c('Predicted', 'Actual'))
+library(caret)
+confusionMatrix(comments_test_pred, comment_test_labels)
+```
+
+# Prediction Function
+
+```{r}
+predict_hate <- function(input_text, model, dtm_template) {
+  input_corpus <- Corpus(VectorSource(input_text))
+  input_corpus <- tm_map(input_corpus, content_transformer(tolower))
+  input_corpus <- tm_map(input_corpus, removePunctuation)
+  input_corpus <- tm_map(input_corpus, removeNumbers)
+  input_corpus <- tm_map(input_corpus, removeWords, stopwords("english"))
+  input_corpus <- tm_map(input_corpus, stripWhitespace)
+  input_dtm <- DocumentTermMatrix(input_corpus, control = list(dictionary = Terms(dtm_template)))
+  input_matrix <- as.data.frame(as.matrix(input_dtm))
+  prediction <- predict(model, input_matrix)
+  return(ifelse(prediction == 1, "Hate Speech", "Not Hate"))
+}
+
+# Example Test
+
+```{r}
+text <- "try to look for a different picture to share on insta you ugly slut hhhhhh"
+predict_hate(text, comments_classifer, comment_dtm)
