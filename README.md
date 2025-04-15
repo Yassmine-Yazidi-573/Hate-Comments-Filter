@@ -24,7 +24,7 @@ Welcome! This is a machine learning project built in **R** that detects hate spe
 Want to test your own sentence? Here's how:
 
 ```r
-text <- "try to look for a different picture to share on insta you ugly slut hhhhhh"
+text <- "try to look for a different picture to share on insta you ugly sl**t hhhhhh"
 predict_hate(text, comments_classifer, comment_dtm)
 # Output: "Hate comment"
 ```
