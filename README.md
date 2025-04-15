@@ -15,7 +15,7 @@ Welcome! This is a machine learning project built in **R** that detects hate spe
 3. **Visualizes** frequent words using word clouds
 4. Builds a **Document-Term Matrix (DTM)**  
 5. Splits data into **training and test sets**
-6. Trains a **Naive Bayes model** to detect hate speech
+6. Trains a **Naive Bayes model** to detect hate comment
 7. **Evaluates** the model’s accuracy with confusion matrix and cross table
 8. Includes a handy function to **test any custom text input**!
 
