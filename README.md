@@ -26,13 +26,13 @@ Want to test your own sentence? Here's how:
 ```r
 text <- "You are so stupid, no one likes you!"
 predict_hate(text, comments_classifer, comment_dtm)
-# Output: "Hate Speech"
+# Output: "Hate comment"
 ```
 ### 🚀 How to Run This
 
 #### 1. Clone this repo or download the files
 
-#### 2. Open `hate_speech_detection_report.Rmd` in **RStudio**
+#### 2. Open `RSCRIPT.R` in **RStudio**
 
 #### 3. Make sure you have these packages installed:
 
