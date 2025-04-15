@@ -6,7 +6,7 @@ Welcome! This is a machine learning project built in **R** that detects hate spe
 
 - **HateSpeechDataset_4000.csv**: The dataset (sample of 4000 comments)
 - **hate comment filter.Rmd**: The main R Markdown report — runs the whole process and generates visual output + predictions
-- **README.md**: What you're reading now
+- **RSCRIPT.R**: The full R script I initially made
 
 ### 🛠️ What the Code Does
 
