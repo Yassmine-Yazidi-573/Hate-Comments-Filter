@@ -38,8 +38,8 @@ predict_hate(text, comments_classifer, comment_dtm)
 
 ```r
 install.packages(c("tm", "SnowballC", "wordcloud", "quanteda", "e1071", "gmodels", "caret"))
-install.packages("tinytex") # for PDF rendering
-tinytex::install_tinytex()  # only once
+install.packages("tinytex")
+tinytex::install_tinytex()  
 ```
 
 #### 4. Click **Knit > Knit to PDF**  
