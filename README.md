@@ -51,6 +51,12 @@ RStudio will run all the code, generate visualizations, and export everything as
 - Word clouds showing most frequent terms
 - Confusion matrix of predictions
 
+## 👩‍💻 Author
+
+**Yassmine Yazidi**  
+Business Student & Data Enthusiast  
+Tunisia 🇹🇳
+
 ### ❤️ Author Notes
 
 - This is a simplified academic project and **not** ready for production.
