@@ -41,10 +41,6 @@ install.packages(c("tm", "SnowballC", "wordcloud", "quanteda", "e1071", "gmodels
 install.packages("tinytex")
 tinytex::install_tinytex()  
 ```
-
-#### 4. Click **Knit > Knit to PDF**  
-RStudio will run all the code, generate visualizations, and export everything as a PDF report.
-
 ### 📊 Sample Output
 
 - Accuracy: ~60%
