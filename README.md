@@ -37,9 +37,7 @@ predict_hate(text, comments_classifer, comment_dtm)
 #### 3. Make sure you have these packages installed:
 
 ```r
-install.packages(c("tm", "SnowballC", "wordcloud", "quanteda", "e1071", "gmodels", "caret"))
-install.packages("tinytex")
-tinytex::install_tinytex()  
+install.packages(c("tm", "SnowballC", "wordcloud", "quanteda", "e1071", "gmodels", "caret"))  
 ```
 ### 📊 Sample Output
 
